@@ -228,7 +228,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const message = {
         loading: 'img/form/spinner.svg',
         success: 'Спасибо. Мы скоро с вами свяжемся.',
-        fail: 'Что-то пошло не так! :('
+        failure: 'Что-то пошло не так! :('
     };
 
     forms.forEach((item) => {
@@ -244,33 +244,33 @@ window.addEventListener('DOMContentLoaded', () => {
             statusMessage.style.cssText = `
                 display: block;
                 margin: 0 auto -38px auto;
+                min-height: 38px;
             `;
             form.insertAdjacentElement('afterend', statusMessage);
-
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
             
-            request.setRequestHeader('Content-type', 'application/json');
             const formData = new FormData(form);
 
             const object = {};
             formData.forEach(function(value, key) {
-                object.key = value;
+                object[key] = value;
             });
 
-            const json = JSON.stringify(object);
-
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(message.success);
-                    form.reset();
-                    statusMessage.remove();
-                } else {
-                    showThanksModal(message.fail);
-                }
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            })
+            .then((data) => data.text())
+            .then(data => {
+                console.log(data);
+                showThanksModal(message.success);
+                statusMessage.remove();
+            }).catch(() => {
+                showThanksModal(message.failure);
+            }).finally(() => {
+                form.reset();
             });
         });
     }
