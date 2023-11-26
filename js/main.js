@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Timer 
 
-    const deadline = '2023-04-20';
+    const deadline = '2024-04-20';
 
     function getTimeRemaining(endtime) {
         const t = Date.parse(endtime) - Date.parse(new Date());
